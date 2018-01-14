@@ -8,6 +8,11 @@
  * @property {string} name
  */
 
+ class Item {
+  constructor(name) {
+    this.name = name;
+  }
+ }
 
 /**
  * Class => Weapon(name, damage)
@@ -25,12 +30,17 @@
  * @property {number} damage
  */
 
+ class Weapon extends Item {
+   constructor(name, damage) {
+     super (name);
+     this.damage = damage;
+   }
+ }
 
 /**
  * Weapon Extends Item Class
  * -----------------------------
  */
-
 
 
 /**
@@ -49,6 +59,12 @@
  * @property {number} energy
  */
 
+ class Food extends Item {
+   constructor(name, energy){
+     super(name);
+     this.energy = energy;
+   }
+ }
 
 /**
  * Food Extends Item Class
