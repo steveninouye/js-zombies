@@ -97,30 +97,50 @@
 
  class Player {
    constructor(name, health, strength, speed){
-     this.name = name;
-     this.health = health;
-     this.strength = strength;
-     this.speed = speed;
+     this._name = name;
+     this._health = health;
+     this._strength = strength;
+     this._speed = speed;
      this._pack = [];
      this._maxHealth = health;
+     this._isAlive = true;
+     this._equipped = false;
    }
+   get name(){
+     return this._name;
+   }
+
+   get health(){
+     return this._health;
+   }
+
+   get strength(){
+     return this._strength;
+   }
+
+   get speed(){
+     return this._speed;
+   }
+
    get isAlive(){
-     return true;
-   };
-   get equipped(){
-     return false;
+     return this._isAlive;
    }
+
+   get equipped(){
+     return this._equipped;
+   }
+
    get getPack(){
      return function(){
        return this._pack;
      };
    }
+
    get getMaxHealth(){
      return function(){
        return this._maxHealth;
      }
    }
- }
 
 /**
  * Player Class Method => checkPack()
@@ -134,9 +154,13 @@
  * @name checkPack
  */
 
- Player.prototype.checkPack = function(){
-   console.log(this.getPack)
- }
+   checkPack(){
+     let contents = "";
+     this.getPack().forEach(element => {
+      contents += element + " ";
+     })
+     console.log("Pack Contents: " + contents)
+   }
 
 /**
  * Player Class Method => takeItem(item)
@@ -156,17 +180,14 @@
  * @return {boolean} true/false     Whether player was able to store item in pack.
  */
 
- Player.prototype.takeItem = function(item){
-   let quantity = this.getPack();
-   if(quantity.length < 3){
-     console.log(`${this.name} ${item}`);
-     this._pack.push(item);
-     return true;
-   } else {
-     console.log('The pack is full so the item could not be stored');
-     return false;
-   }
- }
+takeItem(item){
+  if(this.getPack().length < 3){
+    console.log(`${this.name} ${item}`);
+    this._pack.push(item);
+  } else {
+    return false;
+  }
+}
 
 /**
  * Player Class Method => discardItem(item)
@@ -194,18 +215,16 @@
  * @return {boolean} true/false     Whether player was able to remove item from pack.
  */
 
- Player.prototype.discardItem = function(item){
-   let pack = this.getPack();
-   let idx = pack.indexOf(item);
-   if(idx !== -1){
-     this._pack.splice(idx, 1);
-     console.log(`${this.name} discarded ${item}`);
-     return true;
-   } else {
-     console.log(`${item} was not discarded`);
-     return false;
-   }
- }
+discardItem(item){
+  if(this._pack.indexOf(item) !== -1){
+    this._pack.splice(this._pack.indexOf(item), 1);
+    console.log(`${this._name} discarded ${item} \nPack Contents: ${this._pack}`);
+    return true;
+  } else {
+    console.log(`Item could not be found.  Nothing was discarded`);
+    return false;
+  }
+}
 
 /**
  * Player Class Method => equip(itemToEquip)
@@ -227,9 +246,18 @@
  * @param {Weapon} itemToEquip  The weapon item to equip.
  */
 
- Player.prototype.equip = function(itemToEquip){
-   
- }
+equip(itemToEquip){
+  if(itemToEquip instanceof Weapon && this._pack.indexOf(itemToEquip) !== -1){
+    if(this._equipped){
+      let weapon = this._equipped;
+      this._pack.push(weapon);
+    }
+    this._equipped = itemToEquip;
+    this._pack.splice(this._pack.indexOf(itemToEquip), 1);
+  } else {
+    return false;
+  }
+}
 
 /**
  * Player Class Method => eat(itemToEat)
@@ -250,6 +278,23 @@
  * @param {Food} itemToEat  The food item to eat.
  */
 
+ eat(itemToEat){
+   console.log(itemToEat);
+   console.log(this._pack[0]);
+   if(itemToEat instanceof (Food) && this.getPack().indexOf(itemToEat) !== -1){
+     console.log('THIS IS TRUE');
+     console.log(this._maxHealth);
+     if(itemToEat.energy + this._health >= this._maxHealth){
+       this._health = this._maxHealth;
+     } else {
+      this._health += itemToEat.energy;
+     }
+     this._pack.splice(this._pack.indexOf(itemToEat), 1);
+   } else {
+     console.log('this is ELSE');
+     return this._health;
+   }
+ }
 
 /**
  * Player Class Method => useItem(item)
@@ -279,7 +324,8 @@
  * @return {string/boolean}   Weapon name or false if nothing is equipped.
  */
 
-
+ 
+ }
 /**
  * Class => Zombie(health, strength, speed)
  * -----------------------------
